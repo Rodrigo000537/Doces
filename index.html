@@ -6,8 +6,8 @@
     <title>FinanceFlow - Global Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore-compat.js"></script>
     <style>
         .data-type-btn { transition: all 0.2s; }
         .data-type-btn.active-income { border-color: #3b82f6; background: #1e40af; }
@@ -17,621 +17,400 @@
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-    <!-- Login Screen -->
-    <div id="loginScreen" class="fixed inset-0 flex items-center justify-center bg-gray-900 z-50">
-        <div class="bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-md">
-            <div class="text-center mb-8">
-                <div class="flex justify-center mb-4">
-                    <svg class="w-16 h-16 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">FinanceFlow</h1>
-                <p class="text-gray-400">Real-time Global Sync System</p>
-                <div class="flex items-center justify-center mt-2 text-xs text-green-400">
-                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
-                    Cloud Connected
-                </div>
+
+<!-- Login Screen -->
+<div id="loginScreen" class="fixed inset-0 flex items-center justify-center bg-gray-900 z-50"> 
+    <div class="bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <svg class="w-16 h-16 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
             </div>
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
-                </div>
-                <div id="loginError" class="hidden bg-red-900/50 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Sign In</button>
-            </form>
-            <div class="mt-8 text-center text-sm text-gray-400">
-                <p class="mb-2">Test accounts:</p>
-                <div class="grid grid-cols-1 gap-2">
-                    <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rafael / Fera (Client)</div>
-                    <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Pedro / Dias (Client)</div>
-                    <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rodrigo / Digo (Admin)</div>
-                </div>
+            <h1 class="text-3xl font-bold text-white mb-2">FinanceFlow</h1>
+            <p class="text-gray-400">Real-time Global Sync System</p>
+            <div class="flex items-center justify-center mt-2 text-xs text-green-400">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
+                Cloud Connected
+            </div>
+        </div>
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
+            </div>
+            <div id="loginError" class="hidden bg-red-900/50 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Sign In</button>
+        </form>
+        <div class="mt-8 text-center text-sm text-gray-400">
+            <p class="mb-2">Test accounts:</p>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rafael / Fera (Client)</div>
+                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Pedro / Dias (Client)</div>
+                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rodrigo / Digo (Admin)</div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Dashboard -->
-    <div id="dashboardScreen" class="hidden min-h-screen">
-        <!-- Header -->
-        <header class="bg-gray-800 shadow-lg sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-4">
-                    <div class="flex items-center space-x-3">
-                        <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+<!-- Dashboard -->
+<div id="dashboardScreen" class="hidden min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">FinanceFlow</h1>
+                        <div class="flex items-center text-xs text-green-400">
+                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 pulse-dot"></span>
+                            <span>Live Sync</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm">
+                        <div class="text-gray-300">Welcome, <span id="currentUsername" class="font-medium text-white"></span></div>
+                        <div id="userRole" class="text-xs text-indigo-400"></div>
+                    </div>
+                    <button id="logoutBtn" class="flex items-center space-x-2 text-gray-300 hover:text-white transition duration-200 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg">
+                        <span>Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Chart Section -->
+            <div class="lg:col-span-2 order-2 lg:order-1">
+                <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-semibold text-white">Financial Overview</h2>
+                        <div class="flex items-center space-x-3">
+                            <div id="syncStatus" class="flex items-center text-xs text-green-400">
+                                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
+                                Synced
+                            </div>
+                            <span id="lastUpdate" class="text-xs text-gray-400"></span>
+                        </div>
+                    </div>
+                    <div class="relative h-96">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Panel -->
+            <div class="lg:col-span-1 order-1 lg:order-2 space-y-6">
+
+                <!-- Stats Card -->
+                <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">Quick Stats</h2>
+                    <div id="statistics" class="space-y-4"></div>
+                </div>
+
+                <!-- Admin Panel -->
+                <div id="adminPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">Add Transaction</h2>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button id="btnIncome" class="data-type-btn active-income text-white py-3 rounded-lg font-medium border-2">💰 Income</button>
+                        <button id="btnExpense" class="data-type-btn text-white py-3 rounded-lg font-medium border-2 border-gray-600 bg-gray-700">💸 Expense</button>
+                    </div>
+                    <div class="space-y-4 mb-4">
                         <div>
-                            <h1 class="text-xl font-bold text-white">FinanceFlow</h1>
-                            <div class="flex items-center text-xs text-green-400">
-                                <span class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 pulse-dot"></span>
-                                <span>Live Sync</span>
-                            </div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Day (1-365)</label>
+                            <input type="number" id="editDay" min="1" max="365" placeholder="e.g., 10" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Amount ($)</label>
+                            <input type="number" id="editValue" step="0.01" min="0" placeholder="e.g., 100.00" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
                         </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="text-sm">
-                            <div class="text-gray-300">Welcome, <span id="currentUsername" class="font-medium text-white"></span></div>
-                            <div id="userRole" class="text-xs text-indigo-400"></div>
-                        </div>
-                        <button id="logoutBtn" class="flex items-center space-x-2 text-gray-300 hover:text-white transition duration-200 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg">
-                            <span>Sign Out</span>
-                        </button>
+                    <div id="editError" class="hidden bg-red-900/50 text-red-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
+                    <div id="editSuccess" class="hidden bg-green-900/50 text-green-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button id="saveIncomeBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">Add Income</button>
+                        <button id="saveExpenseBtn" class="bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition">Add Expense</button>
+                    </div>
+                    <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
+                        <h3 class="font-medium text-white mb-2">Instructions:</h3>
+                        <ul class="space-y-1 text-xs">
+                            <li>• Select type (Income or Expense)</li>
+                            <li>• Enter the day (1-365)</li>
+                            <li>• Enter the amount</li>
+                            <li>• Click Add button</li>
+                            <li>• ✨ Values on the same day are SUMMED</li>
+                            <li>• 🌐 Data syncs across all devices instantly</li>
+                        </ul>
+                    </div>
+                    <div id="dataList" class="mt-4 max-h-64 overflow-y-auto"></div>
+                </div>
+
+                <!-- Client Panel -->
+                <div id="clientPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
+                    <p class="text-gray-300 text-sm mb-4">You are viewing the real-time financial chart. Only administrators can edit the data.</p>
+                    <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
+                        <h3 class="font-medium text-white mb-2">Features:</h3>
+                        <ul class="space-y-1 text-xs">
+                            <li>• Real-time updates across devices</li>
+                            <li>• Global data synchronization</li>
+                            <li>• Instant chart refresh</li>
+                            <li>• Cloud-based storage</li>
+                        </ul>
                     </div>
                 </div>
+
             </div>
-        </header>
+        </div>
+    </main>
+</div>
 
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Chart Section -->
-                <div class="lg:col-span-2 order-2 lg:order-1">
-                    <div class="bg-gray-800 rounded-xl shadow-lg p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-lg font-semibold text-white">Financial Overview</h2>
-                            <div class="flex items-center space-x-3">
-                                <div id="syncStatus" class="flex items-center text-xs text-green-400">
-                                    <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
-                                    Synced
-                                </div>
-                                <span id="lastUpdate" class="text-xs text-gray-400"></span>
-                            </div>
-                        </div>
-                        <div class="relative h-96">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBiCAjf5-UIfndcAs33IeuZu0nOQlPryxI",
+        authDomain: "negocio-43657.firebaseapp.com",
+        projectId: "negocio-43657",
+        storageBucket: "negocio-43657.appspot.com",
+        messagingSenderId: "751435187048",
+        appId: "1:751435187048:web:59e69bad56c1deacf98cdd",
+        measurementId: "G-ECL4EFRXMC"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const globalDoc = db.collection("finance").doc("globalData");
 
-                <!-- Side Panel -->
-                <div class="lg:col-span-1 order-1 lg:order-2 space-y-6">
-                    <!-- Stats Card -->
-                    <div class="bg-gray-800 rounded-xl shadow-lg p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Quick Stats</h2>
-                        <div id="statistics" class="space-y-4"></div>
-                    </div>
+    let currentUser = null;
+    let incomeData = {};
+    let expenseData = {};
+    let chart = null;
+    let selectedType = 'income';
 
-                    <!-- Admin Panel -->
-                    <div id="adminPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Add Transaction</h2>
-                        
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button id="btnIncome" class="data-type-btn active-income text-white py-3 rounded-lg font-medium border-2">💰 Income</button>
-                            <button id="btnExpense" class="data-type-btn text-white py-3 rounded-lg font-medium border-2 border-gray-600 bg-gray-700">💸 Expense</button>
-                        </div>
+    const users = {
+        Rafael: { password: 'Fera', role: 'client' },
+        Pedro: { password: 'Dias', role: 'client' },
+        Rodrigo: { password: 'Digo', role: 'admin' }
+    };
 
-                        <div class="space-y-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-1">Day (1-365)</label>
-                                <input type="number" id="editDay" min="1" max="365" placeholder="e.g., 10" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-1">Amount ($)</label>
-                                <input type="number" id="editValue" step="0.01" min="0" placeholder="e.g., 100.00" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
-                            </div>
-                        </div>
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboardScreen = document.getElementById('dashboardScreen');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const currentUsername = document.getElementById('currentUsername');
+    const userRole = document.getElementById('userRole');
+    const adminPanel = document.getElementById('adminPanel');
+    const clientPanel = document.getElementById('clientPanel');
+    const statistics = document.getElementById('statistics');
+    const btnIncome = document.getElementById('btnIncome');
+    const btnExpense = document.getElementById('btnExpense');
+    const saveIncomeBtn = document.getElementById('saveIncomeBtn');
+    const saveExpenseBtn = document.getElementById('saveExpenseBtn');
+    const editError = document.getElementById('editError');
+    const editSuccess = document.getElementById('editSuccess');
+    const dataList = document.getElementById('dataList');
+    const lastUpdate = document.getElementById('lastUpdate');
 
-                        <div id="editError" class="hidden bg-red-900/50 text-red-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
-                        <div id="editSuccess" class="hidden bg-green-900/50 text-green-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
-
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button id="saveIncomeBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">Add Income</button>
-                            <button id="saveExpenseBtn" class="bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition">Add Expense</button>
-                        </div>
-
-                        <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
-                            <h3 class="font-medium text-white mb-2">Instructions:</h3>
-                            <ul class="space-y-1 text-xs">
-                                <li>• Select type (Income or Expense)</li>
-                                <li>• Enter the day (1-365)</li>
-                                <li>• Enter the amount</li>
-                                <li>• Click Add button</li>
-                                <li>• ✨ Values on the same day are SUMMED</li>
-                                <li>• 🌐 Data syncs across all devices instantly</li>
-                            </ul>
-                        </div>
-
-                        <div id="dataList" class="mt-4 max-h-64 overflow-y-auto"></div>
-                    </div>
-
-                    <!-- Client Panel -->
-                    <div id="clientPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
-                        <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
-                        <p class="text-gray-300 text-sm mb-4">You are viewing the real-time financial chart. Only administrators can edit the data.</p>
-                        <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
-                            <h3 class="font-medium text-white mb-2">Features:</h3>
-                            <ul class="space-y-1 text-xs">
-                                <li>• Real-time updates across devices</li>
-                                <li>• Global data synchronization</li>
-                                <li>• Instant chart refresh</li>
-                                <li>• Cloud-based storage</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBiCAjf5-UIfndcAs33IeuZu0nOQlPryxI",
-            authDomain: "negocio-43657.firebaseapp.com",
-            projectId: "negocio-43657",
-            storageBucket: "negocio-43657.appspot.com",
-            messagingSenderId: "751435187048",
-            appId: "1:751435187048:web:59e69bad56c1deacf98cdd",
-            measurementId: "G-ECL4EFRXMC"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const globalDoc = db.collection("finance").doc("globalData");
-
-        // State
-        let currentUser = null;
-        let incomeData = {};
-        let expenseData = {};
-        let chart = null;
-        let selectedType = 'income';
-
-        // User accounts
-        const users = {
-            Rafael: { password: 'Fera', role: 'client' },
-            Pedro: { password: 'Dias', role: 'client' },
-            Rodrigo: { password: 'Digo', role: 'admin' }
-        };
-
-        // DOM elements
-        const loginScreen = document.getElementById('loginScreen');
-        const dashboardScreen = document.getElementById('dashboardScreen');
-        const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const currentUsername = document.getElementById('currentUsername');
-        const userRole = document.getElementById('userRole');
-        const adminPanel = document.getElementById('adminPanel');
-        const clientPanel = document.getElementById('clientPanel');
-        const statistics = document.getElementById('statistics');
-        const btnIncome = document.getElementById('btnIncome');
-        const btnExpense = document.getElementById('btnExpense');
-        const saveIncomeBtn = document.getElementById('saveIncomeBtn');
-        const saveExpenseBtn = document.getElementById('saveExpenseBtn');
-        const editError = document.getElementById('editError');
-        const editSuccess = document.getElementById('editSuccess');
-        const dataList = document.getElementById('dataList');
-        const lastUpdate = document.getElementById('lastUpdate');
-
-        // Real-time listener for Firebase
-        globalDoc.onSnapshot((doc) => {
-            console.log('Firebase snapshot received!', doc.exists);
-            if (doc.exists) {
-                const data = doc.data();
-                incomeData = data.income || {};
-                expenseData = data.expense || {};
-                
-                console.log('Income data:', incomeData);
-                console.log('Expense data:', expenseData);
-                
-                if (currentUser) {
-                    createChart();
-                    updateStatistics();
-                    if (currentUser.role === 'admin') {
-                        updateDataList();
-                    }
-                }
-
-                const updateTime = data.lastUpdated?.toDate() || new Date();
-                lastUpdate.textContent = `Updated: ${updateTime.toLocaleTimeString()}`;
+    // Firebase listener
+    globalDoc.onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            incomeData = data.income || {};
+            expenseData = data.expense || {};
+            if (currentUser) {
+                createChart();
+                updateStatistics();
+                if (currentUser.role === 'admin') updateDataList();
             }
-        });
-
-        // Save to Firebase
-        async function saveToFirebase() {
-            try {
-                console.log('Saving to Firebase...', { income: incomeData, expense: expenseData });
-                await globalDoc.set({
-                    income: incomeData,
-                    expense: expenseData,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                console.log('Save successful!');
-                return true;
-            } catch (error) {
-                console.error('Error saving to Firebase:', error);
-                return false;
-            }
+            const updateTime = data.lastUpdated?.toDate() || new Date();
+            lastUpdate.textContent = `Updated: ${updateTime.toLocaleTimeString()}`;
         }
+    });
 
-        // Login
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+    async function saveToFirebase() {
+        try {
+            await globalDoc.set({
+                income: incomeData,
+                expense: expenseData,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
 
-            const user = users[username];
-            if (user && user.password === password) {
-                currentUser = { username, role: user.role };
-                showDashboard();
-            } else {
-                showMessage(loginError, 'Invalid username or password', 'error');
-            }
-        });
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const user = users[username];
+        if (user && user.password === password) {
+            currentUser = { username, role: user.role };
+            showDashboard();
+        } else {
+            showMessage(loginError, 'Invalid username or password', 'error');
+        }
+    });
 
-        // Logout
-        logoutBtn.addEventListener('click', () => {
-            currentUser = null;
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
+    logoutBtn.addEventListener('click', () => {
+        currentUser = null;
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('editDay').value = '';
+        document.getElementById('editValue').value = '';
+        hideMessage(loginError);
+        hideMessage(editError);
+        hideMessage(editSuccess);
+        loginScreen.classList.remove('hidden');
+        dashboardScreen.classList.add('hidden');
+    });
+
+    function showDashboard() {
+        loginScreen.classList.add('hidden');
+        dashboardScreen.classList.remove('hidden');
+        hideMessage(loginError);
+        currentUsername.textContent = currentUser.username;
+        userRole.textContent = currentUser.role === 'admin' ? 'Administrator' : 'Client';
+        if (currentUser.role === 'admin') {
+            adminPanel.classList.remove('hidden');
+            clientPanel.classList.add('hidden');
+            updateDataList();
+        } else {
+            adminPanel.classList.add('hidden');
+            clientPanel.classList.remove('hidden');
+        }
+        createChart();
+        updateStatistics();
+    }
+
+    btnIncome.addEventListener('click', () => {
+        selectedType = 'income';
+        btnIncome.classList.add('active-income');
+        btnIncome.classList.remove('bg-gray-700', 'border-gray-600');
+        btnExpense.classList.remove('active-expense');
+        btnExpense.classList.add('bg-gray-700', 'border-gray-600');
+        updateDataList();
+    });
+
+    btnExpense.addEventListener('click', () => {
+        selectedType = 'expense';
+        btnExpense.classList.add('active-expense');
+        btnExpense.classList.remove('bg-gray-700', 'border-gray-600');
+        btnIncome.classList.remove('active-income');
+        btnIncome.classList.add('bg-gray-700', 'border-gray-600');
+        updateDataList();
+    });
+
+    saveIncomeBtn.addEventListener('click', () => addTransaction('income'));
+    saveExpenseBtn.addEventListener('click', () => addTransaction('expense'));
+
+    function addTransaction(type) {
+        const day = parseInt(document.getElementById('editDay').value);
+        const value = parseFloat(document.getElementById('editValue').value);
+        if (isNaN(day) || day < 1 || day > 365) return showMessage(editError, 'Day must be between 1 and 365', 'error');
+        if (isNaN(value) || value <= 0) return showMessage(editError, 'Amount must be greater than 0', 'error');
+        if (type === 'income') incomeData[day] = (incomeData[day] || 0) + value;
+        else expenseData[day] = (expenseData[day] || 0) + value;
+        saveToFirebase().then(success => {
+            if (success) showMessage(editSuccess, 'Transaction added!', 'success');
             document.getElementById('editDay').value = '';
             document.getElementById('editValue').value = '';
-            hideMessage(loginError);
-            hideMessage(editError);
-            hideMessage(editSuccess);
-            loginScreen.classList.remove('hidden');
-            dashboardScreen.classList.add('hidden');
         });
+    }
 
-        // Show dashboard
-        function showDashboard() {
-            loginScreen.classList.add('hidden');
-            dashboardScreen.classList.remove('hidden');
-            hideMessage(loginError);
+    function showMessage(element, message, type) {
+        element.textContent = message;
+        element.classList.remove('hidden');
+        element.classList.remove('bg-red-900','bg-green-900');
+        element.classList.add(type === 'error' ? 'bg-red-900' : 'bg-green-900');
+    }
 
-            currentUsername.textContent = currentUser.username;
-            userRole.textContent = currentUser.role === 'admin' ? 'Administrator' : 'Client';
+    function hideMessage(element) {
+        element.classList.add('hidden');
+    }
 
-            if (currentUser.role === 'admin') {
-                adminPanel.classList.remove('hidden');
-                clientPanel.classList.add('hidden');
-                updateDataList();
-            } else {
-                adminPanel.classList.add('hidden');
-                clientPanel.classList.remove('hidden');
-            }
+    function createChart() {
+        const labels = [...new Set([...Object.keys(incomeData), ...Object.keys(expenseData)])].sort((a,b)=>a-b);
+        const incomeValues = labels.map(d => incomeData[d] || 0);
+        const expenseValues = labels.map(d => expenseData[d] || 0);
 
-            createChart();
-            updateStatistics();
-        }
-
-        // Type selection
-        btnIncome.addEventListener('click', () => {
-            selectedType = 'income';
-            btnIncome.classList.add('active-income');
-            btnIncome.classList.remove('bg-gray-700', 'border-gray-600');
-            btnExpense.classList.remove('active-expense');
-            btnExpense.classList.add('bg-gray-700', 'border-gray-600');
-            updateDataList();
-        });
-
-        btnExpense.addEventListener('click', () => {
-            selectedType = 'expense';
-            btnExpense.classList.add('active-expense');
-            btnExpense.classList.remove('bg-gray-700', 'border-gray-600');
-            btnIncome.classList.remove('active-income');
-            btnIncome.classList.add('bg-gray-700', 'border-gray-600');
-            updateDataList();
-        });
-
-        // Save transaction
-        saveIncomeBtn.addEventListener('click', () => saveTransaction('income'));
-        saveExpenseBtn.addEventListener('click', () => saveTransaction('expense'));
-
-        async function saveTransaction(type) {
-            hideMessage(editSuccess);
-            hideMessage(editError);
-
-            const day = parseInt(document.getElementById('editDay').value);
-            const value = parseFloat(document.getElementById('editValue').value);
-
-            if (!day || !value) {
-                showMessage(editError, 'Please fill in both day and amount', 'error');
-                return;
-            }
-
-            if (day < 1 || day > 365) {
-                showMessage(editError, 'Day must be between 1 and 365', 'error');
-                return;
-            }
-
-            if (value <= 0) {
-                showMessage(editError, 'Amount must be greater than 0', 'error');
-                return;
-            }
-
-            if (type === 'income') {
-                incomeData[day] = (incomeData[day] || 0) + value;
-            } else {
-                expenseData[day] = (expenseData[day] || 0) + value;
-            }
-
-            const saved = await saveToFirebase();
-            if (saved) {
-                const typeText = type === 'income' ? '💰 Income' : '💸 Expense';
-                const totalValue = type === 'income' ? incomeData[day] : expenseData[day];
-                showMessage(editSuccess, `${typeText} added: Day ${day}, +$${value.toFixed(2)} (Total: $${totalValue.toFixed(2)})`, 'success');
-                
-                document.getElementById('editDay').value = '';
-                document.getElementById('editValue').value = '';
-
-                setTimeout(() => hideMessage(editSuccess), 3000);
-            } else {
-                showMessage(editError, 'Error saving data. Please try again.', 'error');
-            }
-        }
-
-        // Delete transaction
-        window.deleteTransaction = async function(type, day) {
-            if (type === 'income') {
-                delete incomeData[day];
-            } else {
-                delete expenseData[day];
-            }
-
-            const saved = await saveToFirebase();
-            if (saved) {
-                showMessage(editSuccess, `Day ${day} data removed successfully!`, 'success');
-                setTimeout(() => hideMessage(editSuccess), 3000);
-            }
-        };
-
-        // Update data list
-        function updateDataList() {
-            const data = selectedType === 'income' ? incomeData : expenseData;
-            const color = selectedType === 'income' ? '#60A5FA' : '#F87171';
-            const emoji = selectedType === 'income' ? '💰' : '💸';
-            const label = selectedType === 'income' ? 'Income' : 'Expense';
-
-            if (Object.keys(data).length === 0) {
-                dataList.innerHTML = `<p class="text-gray-400 text-center py-4">No ${label.toLowerCase()} recorded</p>`;
-                return;
-            }
-
-            const sortedDays = Object.keys(data).map(Number).sort((a, b) => a - b);
-            let html = `<h3 class="font-semibold mb-3" style="color: ${color};">${emoji} ${label}s:</h3>`;
-
-            sortedDays.forEach(day => {
-                html += `
-                    <div class="flex justify-between items-center bg-gray-700 rounded-lg p-3 mb-2">
-                        <div>
-                            <div class="font-medium" style="color: ${color};">Day ${day}</div>
-                            <div class="text-sm text-gray-300">$${data[day].toFixed(2)}</div>
-                        </div>
-                        <button onclick="deleteTransaction('${selectedType}', ${day})" class="bg-red-900/50 hover:bg-red-900 text-red-200 px-3 py-1 rounded text-sm transition">Delete</button>
-                    </div>
-                `;
-            });
-
-            dataList.innerHTML = html;
-        }
-
-        // Create chart
-        function createChart() {
-            const ctx = document.getElementById('lineChart').getContext('2d');
-
-            if (chart) {
-                chart.destroy();
-            }
-
-            const hasIncome = Object.keys(incomeData).length > 0;
-            const hasExpense = Object.keys(expenseData).length > 0;
-
-            if (!hasIncome && !hasExpense) {
-                chart = new Chart(ctx, {
-                    type: 'line',
-                    data: { 
-                        labels: [1, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 365], 
-                        datasets: [] 
+        const ctx = document.getElementById('lineChart').getContext('2d');
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeValues,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.2)',
+                        tension: 0.3
                     },
-                    options: getChartOptions()
-                });
-                return;
-            }
-
-            // Get all days that have data
-            const allDays = new Set([
-                ...Object.keys(incomeData).map(Number),
-                ...Object.keys(expenseData).map(Number)
-            ]);
-            const maxDay = Math.max(...allDays, 30);
-            const labels = Array.from({length: maxDay}, (_, i) => i + 1);
-
-            const datasets = [];
-
-            if (hasIncome) {
-                datasets.push({
-                    label: '💰 Income',
-                    data: labels.map(day => incomeData[day] || 0),
-                    borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#3B82F6',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.3,
-                    fill: true
-                });
-            }
-
-            if (hasExpense) {
-                datasets.push({
-                    label: '💸 Expenses',
-                    data: labels.map(day => expenseData[day] || 0),
-                    borderColor: '#EF4444',
-                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#EF4444',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.3,
-                    fill: true
-                });
-            }
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: { labels, datasets },
-                options: getChartOptions()
-            });
-        }
-
-        function getChartOptions() {
-            return {
+                    {
+                        label: 'Expense',
+                        data: expenseValues,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,0.2)',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#D1D5DB',
-                            font: { size: 14, weight: 'bold' }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: '#374151',
-                        titleColor: '#F3F4F6',
-                        bodyColor: '#F3F4F6',
-                        borderColor: '#4B5563',
-                        borderWidth: 1,
-                        callbacks: {
-                            label: (context) => `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`
-                        }
-                    }
-                },
+                plugins: { legend: { labels: { color: '#fff' } } },
                 scales: {
-                    x: {
-                        title: { 
-                            display: true, 
-                            text: 'Days', 
-                            color: '#9CA3AF',
-                            font: { size: 14 }
-                        },
-                        ticks: { 
-                            color: '#9CA3AF',
-                            maxTicksLimit: 12
-                        },
-                        grid: { color: '#374151' }
-                    },
-                    y: {
-                        title: { 
-                            display: true, 
-                            text: 'Amount ($)', 
-                            color: '#9CA3AF',
-                            font: { size: 14 }
-                        },
-                        ticks: { 
-                            color: '#9CA3AF',
-                            callback: function(value) {
-                                return '$' + value.toFixed(0);
-                            }
-                        },
-                        grid: { color: '#374151' },
-                        beginAtZero: true
-                    }
+                    x: { ticks: { color: '#fff' }, grid: { color: '#444' } },
+                    y: { ticks: { color: '#fff' }, grid: { color: '#444' } }
                 }
-            };
-        }
-
-        // Update statistics
-        function updateStatistics() {
-            const hasIncome = Object.keys(incomeData).length > 0;
-            const hasExpense = Object.keys(expenseData).length > 0;
-
-            if (!hasIncome && !hasExpense) {
-                statistics.innerHTML = '<p class="text-gray-400">No data available yet.</p>';
-                return;
             }
+        });
+    }
 
-            let html = '';
+    function updateStatistics() {
+        const totalIncome = Object.values(incomeData).reduce((a,b)=>a+b,0);
+        const totalExpense = Object.values(expenseData).reduce((a,b)=>a+b,0);
+        const balance = totalIncome - totalExpense;
+        statistics.innerHTML = `
+            <div>Total Income: $${totalIncome.toFixed(2)}</div>
+            <div>Total Expense: $${totalExpense.toFixed(2)}</div>
+            <div>Balance: $${balance.toFixed(2)}</div>
+        `;
+    }
 
-            if (hasIncome) {
-                const totalIncome = Object.values(incomeData).reduce((sum, val) => sum + val, 0);
-                const daysIncome = Object.keys(incomeData).length;
-                html += `
-                    <div class="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-blue-400 font-semibold">💰 Income</span>
-                            <span class="text-xs text-gray-400">${daysIncome} days</span>
-                        </div>
-                        <div class="text-2xl font-bold text-blue-400">$${totalIncome.toFixed(2)}</div>
-                    </div>
-                `;
-            }
+    function updateDataList() {
+        if (currentUser.role !== 'admin') return;
+        const dataObj = selectedType === 'income' ? incomeData : expenseData;
+        dataList.innerHTML = '';
+        Object.keys(dataObj).sort((a,b)=>a-b).forEach(day => {
+            const value = dataObj[day];
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center bg-gray-700/50 px-3 py-2 rounded-lg mb-2 text-sm';
+            div.innerHTML = `<span>Day ${day}: $${value.toFixed(2)}</span><button class="text-red-400 hover:text-red-600 font-bold">Delete</button>`;
+            div.querySelector('button').addEventListener('click', () => {
+                delete dataObj[day];
+                saveToFirebase();
+            });
+            dataList.appendChild(div);
+        });
+    }
 
-            if (hasExpense) {
-                const totalExpense = Object.values(expenseData).reduce((sum, val) => sum + val, 0);
-                const daysExpense = Object.keys(expenseData).length;
-                html += `
-                    <div class="bg-red-900/20 border border-red-700/30 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-red-400 font-semibold">💸 Expenses</span>
-                            <span class="text-xs text-gray-400">${daysExpense} days</span>
-                        </div>
-                        <div class="text-2xl font-bold text-red-400">$${totalExpense.toFixed(2)}</div>
-                    </div>
-                `;
-            }
-
-            if (hasIncome && hasExpense) {
-                const totalIncome = Object.values(incomeData).reduce((sum, val) => sum + val, 0);
-                const totalExpense = Object.values(expenseData).reduce((sum, val) => sum + val, 0);
-                const balance = totalIncome - totalExpense;
-                const balanceColor = balance >= 0 ? '#10B981' : '#EF4444';
-                const bgColor = balance >= 0 ? 'bg-green-900/20 border-green-700/30' : 'bg-red-900/20 border-red-700/30';
-                
-                html += `
-                    <div class="${bgColor} border rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-300 font-semibold">📊 Balance</span>
-                        </div>
-                        <div class="text-2xl font-bold" style="color: ${balanceColor};">$${balance.toFixed(2)}</div>
-                    </div>
-                `;
-            }
-
-            statistics.innerHTML = html;
-        }
-
-        // Message helpers
-        function showMessage(element, message, type) {
-            element.textContent = message;
-            element.classList.remove('hidden');
-        }
-
-        function hideMessage(element) {
-            element.classList.add('hidden');
-        }
-    </script>
+</script>
 </body>
 </html>
