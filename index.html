@@ -174,11 +174,15 @@ const firebaseConfig = {
   measurementId: "G-ECL4EFRXMC"
 };
 
+// Variáveis globais do Firebase
+let db;
+let globalDoc;
+
 // Inicializa Firebase com tratamento de erro
 try {
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const globalDoc = db.collection("finance").doc("globalData");
+  db = firebase.firestore();
+  globalDoc = db.collection("finance").doc("globalData");
   
   // Atualiza status de conexão
   const connectionStatus = document.getElementById('connectionStatus');
