@@ -1,416 +1,452 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanceFlow - Global Sync</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore-compat.js"></script>
-    <style>
-        .data-type-btn { transition: all 0.2s; }
-        .data-type-btn.active-income { border-color: #3b82f6; background: #1e40af; }
-        .data-type-btn.active-expense { border-color: #ef4444; background: #b91c1c; }
-        .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinanceFlow - Global Sync</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore-compat.js"></script>
+
+<style>
+.data-type-btn { transition: all 0.2s; }
+.data-type-btn.active-income { border-color: #3b82f6; background: #1e40af; }
+.data-type-btn.active-expense { border-color: #ef4444; background: #b91c1c; }
+.pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+</style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
 
-<!-- Login Screen -->
-<div id="loginScreen" class="fixed inset-0 flex items-center justify-center bg-gray-900 z-50"> 
-    <div class="bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
-        <div class="text-center mb-8">
-            <div class="flex justify-center mb-4">
-                <svg class="w-16 h-16 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-white mb-2">FinanceFlow</h1>
-            <p class="text-gray-400">Real-time Global Sync System</p>
-            <div class="flex items-center justify-center mt-2 text-xs text-green-400">
-                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
-                Cloud Connected
-            </div>
-        </div>
-        <form id="loginForm" class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                <input type="text" id="username" placeholder="Enter your username" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                <input type="password" id="password" placeholder="Enter your password" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
-            </div>
-            <div id="loginError" class="hidden bg-red-900/50 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Sign In</button>
-        </form>
-        <div class="mt-8 text-center text-sm text-gray-400">
-            <p class="mb-2">Test accounts:</p>
-            <div class="grid grid-cols-1 gap-2">
-                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rafael / Fera (Client)</div>
-                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Pedro / Dias (Client)</div>
-                <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rodrigo / Digo (Admin)</div>
-            </div>
-        </div>
+<div id="loginScreen" class="fixed inset-0 flex items-center justify-center bg-gray-900 z-50">
+  <div class="bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="flex justify-center mb-4">
+        <svg class="w-16 h-16 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-white mb-2">FinanceFlow</h1>
+      <p class="text-gray-400">Sistema de Sincronização Global em Tempo Real</p>
+      <div id="connectionStatus" class="flex items-center justify-center mt-2 text-xs text-yellow-400">
+        <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2 pulse-dot"></span>Conectando à Nuvem...
+      </div>
     </div>
+    <form id="loginForm" class="space-y-6">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Usuário</label>
+        <input type="text" id="username" placeholder="Digite seu usuário" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Senha</label>
+        <input type="password" id="password" placeholder="Digite sua senha" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-gray-400">
+      </div>
+      <div id="loginError" class="hidden bg-red-900/50 text-red-200 px-4 py-3 rounded-lg text-sm"></div>
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200">Entrar</button>
+    </form>
+    <div class="mt-8 text-center text-sm text-gray-400">
+      <p class="mb-2">Contas de Teste:</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rafael / Fera (Cliente)</div>
+        <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Pedro / Dias (Cliente)</div>
+        <div class="bg-gray-700/50 rounded-lg p-2 text-xs">Rodrigo / Digo (Admin)</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Dashboard -->
 <div id="dashboardScreen" class="hidden min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-gray-800 shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <h1 class="text-xl font-bold text-white">FinanceFlow</h1>
-                        <div class="flex items-center text-xs text-green-400">
-                            <span class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 pulse-dot"></span>
-                            <span>Live Sync</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-sm">
-                        <div class="text-gray-300">Welcome, <span id="currentUsername" class="font-medium text-white"></span></div>
-                        <div id="userRole" class="text-xs text-indigo-400"></div>
-                    </div>
-                    <button id="logoutBtn" class="flex items-center space-x-2 text-gray-300 hover:text-white transition duration-200 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg">
-                        <span>Sign Out</span>
-                    </button>
-                </div>
-            </div>
+<header class="bg-gray-800 shadow-lg sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center py-4">
+      <div class="flex items-center space-x-3">
+        <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+          <h1 class="text-xl font-bold text-white">FinanceFlow</h1>
+          <div class="flex items-center text-xs text-green-400">
+            <span class="w-1.5 h-1.5 bg-green-400 rounded-full mr-1 pulse-dot"></span>
+            <span>Sincronização em Tempo Real</span>
+          </div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <!-- Chart Section -->
-            <div class="lg:col-span-2 order-2 lg:order-1">
-                <div class="bg-gray-800 rounded-xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-white">Financial Overview</h2>
-                        <div class="flex items-center space-x-3">
-                            <div id="syncStatus" class="flex items-center text-xs text-green-400">
-                                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>
-                                Synced
-                            </div>
-                            <span id="lastUpdate" class="text-xs text-gray-400"></span>
-                        </div>
-                    </div>
-                    <div class="relative h-96">
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Side Panel -->
-            <div class="lg:col-span-1 order-1 lg:order-2 space-y-6">
-
-                <!-- Stats Card -->
-                <div class="bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Quick Stats</h2>
-                    <div id="statistics" class="space-y-4"></div>
-                </div>
-
-                <!-- Admin Panel -->
-                <div id="adminPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Add Transaction</h2>
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <button id="btnIncome" class="data-type-btn active-income text-white py-3 rounded-lg font-medium border-2">💰 Income</button>
-                        <button id="btnExpense" class="data-type-btn text-white py-3 rounded-lg font-medium border-2 border-gray-600 bg-gray-700">💸 Expense</button>
-                    </div>
-                    <div class="space-y-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-1">Day (1-365)</label>
-                            <input type="number" id="editDay" min="1" max="365" placeholder="e.g., 10" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-1">Amount ($)</label>
-                            <input type="number" id="editValue" step="0.01" min="0" placeholder="e.g., 100.00" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
-                        </div>
-                    </div>
-                    <div id="editError" class="hidden bg-red-900/50 text-red-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
-                    <div id="editSuccess" class="hidden bg-green-900/50 text-green-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <button id="saveIncomeBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">Add Income</button>
-                        <button id="saveExpenseBtn" class="bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition">Add Expense</button>
-                    </div>
-                    <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
-                        <h3 class="font-medium text-white mb-2">Instructions:</h3>
-                        <ul class="space-y-1 text-xs">
-                            <li>• Select type (Income or Expense)</li>
-                            <li>• Enter the day (1-365)</li>
-                            <li>• Enter the amount</li>
-                            <li>• Click Add button</li>
-                            <li>• ✨ Values on the same day are SUMMED</li>
-                            <li>• 🌐 Data syncs across all devices instantly</li>
-                        </ul>
-                    </div>
-                    <div id="dataList" class="mt-4 max-h-64 overflow-y-auto"></div>
-                </div>
-
-                <!-- Client Panel -->
-                <div id="clientPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h2 class="text-lg font-semibold text-white mb-4">Information</h2>
-                    <p class="text-gray-300 text-sm mb-4">You are viewing the real-time financial chart. Only administrators can edit the data.</p>
-                    <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
-                        <h3 class="font-medium text-white mb-2">Features:</h3>
-                        <ul class="space-y-1 text-xs">
-                            <li>• Real-time updates across devices</li>
-                            <li>• Global data synchronization</li>
-                            <li>• Instant chart refresh</li>
-                            <li>• Cloud-based storage</li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="text-sm">
+          <div class="text-gray-300">Bem-vindo(a), <span id="currentUsername" class="font-medium text-white"></span></div>
+          <div id="userRole" class="text-xs text-indigo-400"></div>
         </div>
-    </main>
+        <button id="logoutBtn" class="flex items-center space-x-2 text-gray-300 hover:text-white transition duration-200 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-lg">
+          <span>Sair</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 order-2 lg:order-1">
+      <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-semibold text-white">Visão Geral Financeira</h2>
+          <div class="flex items-center space-x-3">
+            <div id="syncStatus" class="flex items-center text-xs text-green-400">
+              <span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>Sincronizado
+            </div>
+            <span id="lastUpdate" class="text-xs text-gray-400"></span>
+          </div>
+        </div>
+        <div class="relative h-96">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-1 order-1 lg:order-2 space-y-6">
+
+      <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Estatísticas Rápidas</h2>
+        <div id="statistics" class="space-y-4"></div>
+      </div>
+
+      <div id="adminPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Adicionar Transação</h2>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button id="btnIncome" class="data-type-btn active-income text-white py-3 rounded-lg font-medium border-2">💰 Receita</button>
+          <button id="btnExpense" class="data-type-btn text-white py-3 rounded-lg font-medium border-2 border-gray-600 bg-gray-700">💸 Despesa</button>
+        </div>
+        <div class="space-y-4 mb-4">
+          <div>
+            <label for="editDay" class="block text-sm font-medium text-gray-300 mb-1">Dia (1-365)</label>
+            <input type="number" id="editDay" min="1" max="365" placeholder="Ex: 10" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
+          </div>
+          <div>
+            <label for="editValue" class="block text-sm font-medium text-gray-300 mb-1">Valor (R$)</label>
+            <input type="number" id="editValue" step="0.01" min="0" placeholder="Ex: 100.00" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 text-white placeholder-gray-400">
+          </div>
+        </div>
+        <div id="editError" class="hidden bg-red-900/50 text-red-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
+        <div id="editSuccess" class="hidden bg-green-900/50 text-green-200 px-4 py-2 rounded-lg text-sm mb-4"></div>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <button id="saveIncomeBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">Add Receita</button>
+          <button id="saveExpenseBtn" class="bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition">Add Despesa</button>
+        </div>
+        <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
+          <h3 class="font-medium text-white mb-2">Instruções:</h3>
+          <ul class="space-y-1 text-xs">
+            <li>• Valores no mesmo dia são **SOMADOS**.</li>
+            <li>• 🌐 **Sincronização instantânea** para todos os dispositivos.</li>
+          </ul>
+        </div>
+        <div id="dataList" class="mt-4 max-h-64 overflow-y-auto"></div>
+      </div>
+
+      <div id="clientPanel" class="hidden bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 class="text-lg font-semibold text-white mb-4">Visualização em Tempo Real</h2>
+        <p class="text-gray-300 text-sm mb-4">Você está visualizando o gráfico financeiro em **tempo real**. Apenas administradores podem editar os dados.</p>
+        <div class="bg-gray-700/50 rounded-lg p-4 text-sm text-gray-300">
+          <h3 class="font-medium text-white mb-2">Funcionalidades:</h3>
+          <ul class="space-y-1 text-xs">
+            <li>• Atualizações em tempo real entre dispositivos</li>
+            <li>• Sincronização global de dados</li>
+            <li>• Atualização instantânea do gráfico</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
 </div>
 
 <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBiCAjf5-UIfndcAs33IeuZu0nOQlPryxI",
-        authDomain: "negocio-43657.firebaseapp.com",
-        projectId: "negocio-43657",
-        storageBucket: "negocio-43657.appspot.com",
-        messagingSenderId: "751435187048",
-        appId: "1:751435187048:web:59e69bad56c1deacf98cdd",
-        measurementId: "G-ECL4EFRXMC"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const globalDoc = db.collection("finance").doc("globalData");
+// ==================== CONFIGURAÇÃO INICIAL ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyBiCAjf5-UIfndcAs33IeuZu0nOQlPryxI",
+  authDomain: "negocio-43657.firebaseapp.com",
+  projectId: "negocio-43657",
+  storageBucket: "negocio-43657.appspot.com",
+  messagingSenderId: "751435187048",
+  appId: "1:751435187048:web:59e69bad56c1deacf98cdd",
+  measurementId: "G-ECL4EFRXMC"
+};
 
-    let currentUser = null;
-    let incomeData = {};
-    let expenseData = {};
-    let chart = null;
-    let selectedType = 'income';
+// Inicializa Firebase com tratamento de erro
+try {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const globalDoc = db.collection("finance").doc("globalData");
+  
+  // Atualiza status de conexão
+  const connectionStatus = document.getElementById('connectionStatus');
+  if (connectionStatus) {
+    connectionStatus.innerHTML = '<span class="w-2 h-2 bg-green-400 rounded-full mr-2 pulse-dot"></span>Conectado à Nuvem';
+    connectionStatus.className = 'flex items-center justify-center mt-2 text-xs text-green-400';
+  }
+  
+  console.log("✅ Firebase inicializado com sucesso!");
+} catch (error) {
+  console.error("❌ Erro ao inicializar Firebase:", error);
+  const connectionStatus = document.getElementById('connectionStatus');
+  if (connectionStatus) {
+    connectionStatus.innerHTML = '<span class="w-2 h-2 bg-red-400 rounded-full mr-2"></span>Erro de Conexão';
+    connectionStatus.className = 'flex items-center justify-center mt-2 text-xs text-red-400';
+  }
+}
 
-    const users = {
-        Rafael: { password: 'Fera', role: 'client' },
-        Pedro: { password: 'Dias', role: 'client' },
-        Rodrigo: { password: 'Digo', role: 'admin' }
-    };
+// Variáveis de Estado
+let incomeData = {};
+let expenseData = {};
+let chart = null;
+let selectedType = 'income';
+let unsubscribe = null;
 
-    const loginScreen = document.getElementById('loginScreen');
-    const dashboardScreen = document.getElementById('dashboardScreen');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const currentUsername = document.getElementById('currentUsername');
-    const userRole = document.getElementById('userRole');
-    const adminPanel = document.getElementById('adminPanel');
-    const clientPanel = document.getElementById('clientPanel');
-    const statistics = document.getElementById('statistics');
-    const btnIncome = document.getElementById('btnIncome');
-    const btnExpense = document.getElementById('btnExpense');
-    const saveIncomeBtn = document.getElementById('saveIncomeBtn');
-    const saveExpenseBtn = document.getElementById('saveExpenseBtn');
-    const editError = document.getElementById('editError');
-    const editSuccess = document.getElementById('editSuccess');
-    const dataList = document.getElementById('dataList');
-    const lastUpdate = document.getElementById('lastUpdate');
+// Elementos DOM
+const btnIncome = document.getElementById('btnIncome');
+const btnExpense = document.getElementById('btnExpense');
+const saveIncomeBtn = document.getElementById('saveIncomeBtn');
+const saveExpenseBtn = document.getElementById('saveExpenseBtn');
+const editError = document.getElementById('editError');
+const editSuccess = document.getElementById('editSuccess');
+const dataList = document.getElementById('dataList');
+const statistics = document.getElementById('statistics');
+const lastUpdate = document.getElementById('lastUpdate');
 
-    // Firebase listener
-    globalDoc.onSnapshot((doc) => {
-        if (doc.exists) {
+// ==================== FUNÇÕES FIREBASE E SINCRONIZAÇÃO ====================
+
+function startListener() {
+    if (unsubscribe) unsubscribe(); 
+    
+    console.log("🔄 Iniciando listener do Firestore...");
+    
+    unsubscribe = globalDoc.onSnapshot((doc) => {
+        if(doc.exists){
+            console.log("📥 Dados recebidos do Firestore - Atualizando interface...");
             const data = doc.data();
+            
             incomeData = data.income || {};
             expenseData = data.expense || {};
-            if (currentUser) {
-                createChart();
-                updateStatistics();
-                if (currentUser.role === 'admin') updateDataList();
-            }
+            
             const updateTime = data.lastUpdated?.toDate() || new Date();
-            lastUpdate.textContent = `Updated: ${updateTime.toLocaleTimeString()}`;
-        }
-    });
-
-    async function saveToFirebase() {
-        try {
-            await globalDoc.set({
-                income: incomeData,
-                expense: expenseData,
-                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            return true;
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    }
-
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const user = users[username];
-        if (user && user.password === password) {
-            currentUser = { username, role: user.role };
-            showDashboard();
+            lastUpdate.textContent = `Última atualização: ${updateTime.toLocaleTimeString()}`;
+            
+            createChart();
+            updateStatistics();
+            
+            if(currentUser?.role === 'admin') updateDataList();
         } else {
-            showMessage(loginError, 'Invalid username or password', 'error');
+            console.log("⚠️ Documento não existe, inicializando...");
+            saveToFirebase();
         }
+    }, (error) => {
+        console.error("❌ Erro no listener:", error);
+        showMessage(editError, 'Erro de conexão com o Firebase. Verifique as regras de segurança.', 'error');
     });
+}
 
-    logoutBtn.addEventListener('click', () => {
-        currentUser = null;
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('editDay').value = '';
-        document.getElementById('editValue').value = '';
-        hideMessage(loginError);
-        hideMessage(editError);
-        hideMessage(editSuccess);
-        loginScreen.classList.remove('hidden');
-        dashboardScreen.classList.add('hidden');
+async function saveToFirebase(){
+  try{
+    console.log("💾 Salvando dados no Firebase...");
+    await globalDoc.set({
+      income: incomeData,
+      expense: expenseData,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
     });
+    console.log("✅ Dados salvos com sucesso!");
+    return true;
+  }catch(e){ 
+    console.error("❌ Erro ao salvar:", e);
+    showMessage(editError, `Erro ao salvar: ${e.message}`, 'error');
+    return false; 
+  }
+}
 
-    function showDashboard() {
-        loginScreen.classList.add('hidden');
-        dashboardScreen.classList.remove('hidden');
-        hideMessage(loginError);
-        currentUsername.textContent = currentUser.username;
-        userRole.textContent = currentUser.role === 'admin' ? 'Administrator' : 'Client';
-        if (currentUser.role === 'admin') {
-            adminPanel.classList.remove('hidden');
-            clientPanel.classList.add('hidden');
-            updateDataList();
-        } else {
-            adminPanel.classList.add('hidden');
-            clientPanel.classList.remove('hidden');
-        }
-        createChart();
-        updateStatistics();
+// ==================== FUNÇÕES DE ADMIN E EDIÇÃO ====================
+
+btnIncome?.addEventListener('click',()=>{
+  selectedType='income';
+  btnIncome.classList.add('active-income'); btnIncome.classList.remove('bg-gray-700','border-gray-600');
+  btnExpense.classList.remove('active-expense'); btnExpense.classList.add('bg-gray-700','border-gray-600');
+  updateDataList();
+});
+
+btnExpense?.addEventListener('click',()=>{
+  selectedType='expense';
+  btnExpense.classList.add('active-expense'); btnExpense.classList.remove('bg-gray-700','border-gray-600');
+  btnIncome.classList.remove('active-income'); btnIncome.classList.add('bg-gray-700','border-gray-600');
+  updateDataList();
+});
+
+saveIncomeBtn?.addEventListener('click',()=>addTransaction('income'));
+saveExpenseBtn?.addEventListener('click',()=>addTransaction('expense'));
+
+function addTransaction(type){
+  const day = parseInt(document.getElementById('editDay').value);
+  const value = parseFloat(document.getElementById('editValue').value);
+  
+  if(isNaN(day) || day<1 || day>365) return showMessage(editError,'O Dia deve ser entre 1 e 365','error');
+  if(isNaN(value) || value<=0) return showMessage(editError,'O Valor deve ser maior que zero','error');
+  
+  if(type==='income') incomeData[day] = (incomeData[day] || 0) + value;
+  else expenseData[day] = (expenseData[day] || 0) + value;
+
+  saveToFirebase().then(s=>{
+      if(s) {
+        showMessage(editSuccess,'✅ Transação adicionada! Sincronizando...','success');
+        document.getElementById('editDay').value=''; 
+        document.getElementById('editValue').value='';
+      }
+  });
+}
+
+// ==================== FUNÇÕES DE RENDERIZAÇÃO ====================
+
+function createChart(){
+  const labels = Array.from({length: 365}, (_, i) => i + 1); 
+  const incomeValues = labels.map(d => incomeData[d] || 0);
+  const expenseValues = labels.map(d => expenseData[d] || 0);
+  
+  const ctx = document.getElementById('lineChart')?.getContext('2d');
+  if(!ctx) return;
+  
+  if(chart) chart.destroy();
+  
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels: labels,
+      datasets:[
+        {label:'Receita',data:incomeValues,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.2)',tension:0.3, pointRadius: 2},
+        {label:'Despesa',data:expenseValues,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.2)',tension:0.3, pointRadius: 2}
+    ]},
+    options:{
+      responsive:true, 
+      maintainAspectRatio: false,
+      plugins:{
+        legend:{labels:{color:'#fff'}},
+        tooltip:{callbacks:{label: c => ` ${c.dataset.label}: R$${c.parsed.y.toFixed(2)}`}}
+      },
+      scales:{
+        x:{title:{display:true, text:'Dia do Ano', color:'#fff'}, ticks:{color:'#fff', maxTicksLimit: 12}, grid:{color:'#444'}},
+        y:{title:{display:true, text:'Valor (R$)', color:'#fff'}, ticks:{color:'#fff', callback: v => `R$${v.toFixed(2)}`}, grid:{color:'#444'}}
+      }
+    }
+  });
+}
+
+function updateStatistics(){
+  const totalIncome = Object.values(incomeData).reduce((a,b)=>a+b,0);
+  const totalExpense = Object.values(expenseData).reduce((a,b)=>a+b,0);
+  const balance = totalIncome-totalExpense;
+  
+  if(!statistics) return;
+  
+  statistics.innerHTML = `
+    <div class="p-3 bg-green-900/40 rounded-lg">Total Receita: <span class="font-bold text-green-300">R$${totalIncome.toFixed(2)}</span></div>
+    <div class="p-3 bg-red-900/40 rounded-lg">Total Despesa: <span class="font-bold text-red-300">R$${totalExpense.toFixed(2)}</span></div>
+    <div class="p-3 bg-indigo-900/40 rounded-lg">Saldo: <span class="font-bold text-lg ${balance >= 0 ? 'text-green-300' : 'text-red-300'}">R$${balance.toFixed(2)}</span></div>
+  `;
+}
+
+function updateDataList(){
+  const data = selectedType==='income'?incomeData:expenseData;
+  
+  if(!dataList) return;
+  
+  const entries = Object.entries(data)
+    .filter(([day, value]) => value > 0)
+    .sort((a,b)=>a[0]-b[0]);
+  
+  if(entries.length === 0) {
+    dataList.innerHTML = '<div class="text-center text-gray-500 mt-4 text-sm">Nenhuma transação registrada.</div>';
+    return;
+  }
+  
+  dataList.innerHTML = entries
+    .map(([day,value])=>`<div class="p-2 bg-gray-700/50 rounded-lg text-sm text-gray-300 flex justify-between">
+      <span>Dia ${day}:</span>
+      <span class="font-medium ${selectedType==='income'?'text-blue-400':'text-red-400'}">R$${value.toFixed(2)}</span>
+    </div>`)
+    .join('');
+}
+
+function showMessage(el,msg,type){
+  if(!el) return;
+  el.textContent=msg;
+  el.classList.remove('hidden','bg-red-900/50','bg-green-900/50');
+  el.classList.add(type==='error'?'bg-red-900/50':'bg-green-900/50');
+  setTimeout(()=>el.classList.add('hidden'), 3000);
+}
+
+// ==================== SISTEMA DE LOGIN ====================
+
+const users = {
+    rafael:{password:'Fera',role:'client'},
+    pedro:{password:'Dias',role:'client'},
+    rodrigo:{password:'Digo',role:'admin'}
+};
+let currentUser = null;
+
+const loginScreen = document.getElementById('loginScreen');
+const dashboardScreen = document.getElementById('dashboardScreen');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const currentUsername = document.getElementById('currentUsername');
+const userRole = document.getElementById('userRole');
+const adminPanel = document.getElementById('adminPanel');
+const clientPanel = document.getElementById('clientPanel');
+const logoutBtn = document.getElementById('logoutBtn');
+
+loginForm?.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const usernameInput=document.getElementById('username').value.trim().toLowerCase();
+    const passwordInput=document.getElementById('password').value.trim();
+    const user=users[usernameInput];
+    
+    if(user && user.password===passwordInput){
+        currentUser={username:usernameInput,role:user.role};
+        showDashboard();
+    }else showMessage(loginError,'❌ Usuário ou senha inválidos','error');
+});
+
+logoutBtn?.addEventListener('click',()=>{
+    if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = null;
+        console.log("🔌 Listener cancelado no logout");
     }
 
-    btnIncome.addEventListener('click', () => {
-        selectedType = 'income';
-        btnIncome.classList.add('active-income');
-        btnIncome.classList.remove('bg-gray-700', 'border-gray-600');
-        btnExpense.classList.remove('active-expense');
-        btnExpense.classList.add('bg-gray-700', 'border-gray-600');
+    currentUser=null;
+    loginScreen?.classList.remove('hidden');
+    dashboardScreen?.classList.add('hidden');
+    document.getElementById('username').value='';
+    document.getElementById('password').value='';
+});
+
+function showDashboard(){
+    loginScreen?.classList.add('hidden');
+    dashboardScreen?.classList.remove('hidden');
+    if(currentUsername) currentUsername.textContent=currentUser.username;
+    if(userRole) userRole.textContent=currentUser.role==='admin'?'Administrador':'Cliente';
+    
+    if(currentUser.role==='admin'){
+        adminPanel?.classList.remove('hidden'); 
+        clientPanel?.classList.add('hidden');
         updateDataList();
-    });
-
-    btnExpense.addEventListener('click', () => {
-        selectedType = 'expense';
-        btnExpense.classList.add('active-expense');
-        btnExpense.classList.remove('bg-gray-700', 'border-gray-600');
-        btnIncome.classList.remove('active-income');
-        btnIncome.classList.add('bg-gray-700', 'border-gray-600');
-        updateDataList();
-    });
-
-    saveIncomeBtn.addEventListener('click', () => addTransaction('income'));
-    saveExpenseBtn.addEventListener('click', () => addTransaction('expense'));
-
-    function addTransaction(type) {
-        const day = parseInt(document.getElementById('editDay').value);
-        const value = parseFloat(document.getElementById('editValue').value);
-        if (isNaN(day) || day < 1 || day > 365) return showMessage(editError, 'Day must be between 1 and 365', 'error');
-        if (isNaN(value) || value <= 0) return showMessage(editError, 'Amount must be greater than 0', 'error');
-        if (type === 'income') incomeData[day] = (incomeData[day] || 0) + value;
-        else expenseData[day] = (expenseData[day] || 0) + value;
-        saveToFirebase().then(success => {
-            if (success) showMessage(editSuccess, 'Transaction added!', 'success');
-            document.getElementById('editDay').value = '';
-            document.getElementById('editValue').value = '';
-        });
+    } else {
+        adminPanel?.classList.add('hidden'); 
+        clientPanel?.classList.remove('hidden');
     }
+    
+    startListener(); 
+}
 
-    function showMessage(element, message, type) {
-        element.textContent = message;
-        element.classList.remove('hidden');
-        element.classList.remove('bg-red-900','bg-green-900');
-        element.classList.add(type === 'error' ? 'bg-red-900' : 'bg-green-900');
-    }
-
-    function hideMessage(element) {
-        element.classList.add('hidden');
-    }
-
-    function createChart() {
-        const labels = [...new Set([...Object.keys(incomeData), ...Object.keys(expenseData)])].sort((a,b)=>a-b);
-        const incomeValues = labels.map(d => incomeData[d] || 0);
-        const expenseValues = labels.map(d => expenseData[d] || 0);
-
-        const ctx = document.getElementById('lineChart').getContext('2d');
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: incomeValues,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59,130,246,0.2)',
-                        tension: 0.3
-                    },
-                    {
-                        label: 'Expense',
-                        data: expenseValues,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239,68,68,0.2)',
-                        tension: 0.3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#fff' }, grid: { color: '#444' } },
-                    y: { ticks: { color: '#fff' }, grid: { color: '#444' } }
-                }
-            }
-        });
-    }
-
-    function updateStatistics() {
-        const totalIncome = Object.values(incomeData).reduce((a,b)=>a+b,0);
-        const totalExpense = Object.values(expenseData).reduce((a,b)=>a+b,0);
-        const balance = totalIncome - totalExpense;
-        statistics.innerHTML = `
-            <div>Total Income: $${totalIncome.toFixed(2)}</div>
-            <div>Total Expense: $${totalExpense.toFixed(2)}</div>
-            <div>Balance: $${balance.toFixed(2)}</div>
-        `;
-    }
-
-    function updateDataList() {
-        if (currentUser.role !== 'admin') return;
-        const dataObj = selectedType === 'income' ? incomeData : expenseData;
-        dataList.innerHTML = '';
-        Object.keys(dataObj).sort((a,b)=>a-b).forEach(day => {
-            const value = dataObj[day];
-            const div = document.createElement('div');
-            div.className = 'flex justify-between items-center bg-gray-700/50 px-3 py-2 rounded-lg mb-2 text-sm';
-            div.innerHTML = `<span>Day ${day}: $${value.toFixed(2)}</span><button class="text-red-400 hover:text-red-600 font-bold">Delete</button>`;
-            div.querySelector('button').addEventListener('click', () => {
-                delete dataObj[day];
-                saveToFirebase();
-            });
-            dataList.appendChild(div);
-        });
-    }
-
+// Log inicial
+console.log("🚀 FinanceFlow carregado!");
+console.log("📊 Sistema de sincronização em tempo real ativo");
 </script>
 </body>
 </html>
